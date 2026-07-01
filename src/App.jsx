@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import Tarefas from "./Components/Tarefa/Tarefas";
 import CriarTarefa from "./Components/CriarTarefa";
+import TarefasCompletas from "./Components/TarefasCompletas";
 function App() {
   const [tarefas, setTarefas] = useState([
     {
@@ -31,6 +32,14 @@ function App() {
     });
   };
 
+  const criarTarefa = () => {
+    const novaTarefa = {
+      NomeTarefa: sessionStorage.getItem("valorTarefaEscrita"),
+      StatusTarefa: false,
+    };
+    setTarefas([...tarefas, novaTarefa]);
+  };
+
   return (
     <>
       <div className="home">
@@ -38,19 +47,30 @@ function App() {
         <div className="TarefasContainer">
           {tarefas.map((tarefa, index) => {
             return (
-              <>
-                <Tarefas
-                  key={index}
-                  tarefaTexto={tarefa.NomeTarefa}
-                  tarefaStatus={tarefa.StatusTarefa}
-                  setTarefas={() => alternarStatus(index)}
-                />
-              </>
+              <Tarefas
+                key={index}
+                tarefaTexto={tarefa.NomeTarefa}
+                tarefaStatus={tarefa.StatusTarefa}
+                setTarefas={() => alternarStatus(index)}
+              />
+            );
+          })}
+        </div>
+        <div>
+          <h2>COMPLETED</h2>
+          {tarefas.map((tarefa, index) => {
+            return (
+              <Tarefas
+                key={index}
+                tarefaTexto={tarefa.NomeTarefa}
+                tarefaStatus={tarefa.StatusTarefa}
+                setTarefas={() => alternarStatus(index)}
+              />
             );
           })}
         </div>
       </div>
-      <CriarTarefa />
+      <CriarTarefa aoClicar={criarTarefa} />
     </>
   );
 }

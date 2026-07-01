@@ -1,0 +1,28 @@
+*{
+  margin: 0;
+  border: 0;
+  box-sizing: border-box;
+  font-family: var(--fonte-padrao);
+}
+
+:root {
+  --cor-primaria: #3498db;
+  --fonte-padrao: "Inter", sans-serif;
+  --cor-secundaria: #F3EFEE;
+  --cor-botao: #393433;
+}
+
+
+
+.TarefasContainer{
+  display: flex;
+  flex-direction: column;
+  margin-top: 2em;
+  gap: 1em;
+}
+
+.Titulo{
+  width: 90%;
+  margin: auto;
+  margin-top: 1em;
+}

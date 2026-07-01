@@ -1,0 +1,21 @@
+@media (min-width: 375px){
+    .EntradaInput{
+        /* Frame 2609450 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+padding: 14px 21px;
+
+width: 207px;
+height: 56px;
+
+background: #F3EFEE;
+border-radius: 12px;
+
+/* Inside auto layout */
+flex-grow: 1;
+
+    }
+
+}

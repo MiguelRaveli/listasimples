@@ -1,0 +1,36 @@
+.Botao:hover{
+    background-color: #201d1d;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.Botao{
+    transition: 0.3s all;
+}
+
+@media (min-width: 375px){
+    .Botao{
+        /* Frame 2609463 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+padding: 14px 21px;
+gap: 40px;
+
+width: 77px;
+height: 56px;
+
+background: #393433;
+border-radius: 12px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+color: white;
+font-size: 1em;
+
+    }
+
+}

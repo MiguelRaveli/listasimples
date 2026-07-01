@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Tarefas from "./Components/Tarefa/Tarefas";
 import CriarTarefa from "./Components/CriarTarefa";
 import TarefasCompletas from "./Components/TarefasCompletas";
+import { closestCorners, DndContext } from "@dnd-kit/core";
 function App() {
   const [tarefas, setTarefas] = useState([
     {
@@ -19,6 +20,9 @@ function App() {
     },
   ]);
 
+  const [encontrarTarefa, setEncontrarTarefa] = useState(
+    tarefas.some((tarefa) => tarefa.StatusTarefa === true),
+  );
   const alternarStatus = (index) => {
     setTarefas((tarefasAtuais) => {
       // Cria uma nova referência do array
@@ -40,35 +44,49 @@ function App() {
     setTarefas([...tarefas, novaTarefa]);
   };
 
+  useEffect(() => {
+    setEncontrarTarefa(tarefas.some((tarefa) => tarefa.StatusTarefa === true));
+  }, [tarefas]);
   return (
     <>
       <div className="home">
         <h1 className="Titulo">Personal</h1>
+
         <div className="TarefasContainer">
           {tarefas.map((tarefa, index) => {
-            return (
-              <Tarefas
-                key={index}
-                tarefaTexto={tarefa.NomeTarefa}
-                tarefaStatus={tarefa.StatusTarefa}
-                setTarefas={() => alternarStatus(index)}
-              />
-            );
+            if (tarefa.StatusTarefa === false) {
+              return (
+                <DndContext collisionDetection={closestCorners}>
+                  <Tarefas
+                    key={index}
+                    tarefaTexto={tarefa.NomeTarefa}
+                    tarefaStatus={tarefa.StatusTarefa}
+                    setTarefas={() => alternarStatus(index)}
+                  />
+                </DndContext>
+              );
+            }
           })}
         </div>
-        <div>
-          <h2>COMPLETED</h2>
-          {tarefas.map((tarefa, index) => {
-            return (
-              <Tarefas
-                key={index}
-                tarefaTexto={tarefa.NomeTarefa}
-                tarefaStatus={tarefa.StatusTarefa}
-                setTarefas={() => alternarStatus(index)}
-              />
-            );
-          })}
-        </div>
+        {encontrarTarefa === true ? (
+          <div className="TarefasCompletasContainer">
+            <h2 className="TituloTarefasCompletas">COMPLETED</h2>
+            {tarefas.map((tarefa, index) => {
+              if (tarefa.StatusTarefa === true) {
+                return (
+                  <Tarefas
+                    key={index}
+                    tarefaTexto={tarefa.NomeTarefa}
+                    tarefaStatus={tarefa.StatusTarefa}
+                    setTarefas={() => alternarStatus(index)}
+                  />
+                );
+              }
+            })}
+          </div>
+        ) : (
+          ""
+        )}
       </div>
       <CriarTarefa aoClicar={criarTarefa} />
     </>

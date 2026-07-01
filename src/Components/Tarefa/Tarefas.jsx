@@ -1,4 +1,5 @@
 import React from "react";
+
 import "./Tarefas.css";
 const Tarefas = ({ tarefaTexto, tarefaStatus, setTarefas }) => {
   return (

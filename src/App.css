@@ -1,4 +1,4 @@
-*{
+* {
   margin: 0;
   border: 0;
   box-sizing: border-box;
@@ -8,21 +8,45 @@
 :root {
   --cor-primaria: #3498db;
   --fonte-padrao: "Inter", sans-serif;
-  --cor-secundaria: #F3EFEE;
+  --cor-secundaria: #f3efee;
   --cor-botao: #393433;
 }
 
+@media (min-width: 375px) {
+  .TarefasContainer {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2em;
+    gap: 1em;
+  }
 
+  .Titulo {
+    width: 90%;
+    margin: auto;
+    margin-top: 1em;
+  }
+  .TituloTarefasCompletas {
+    
+    width: 90%;
+    margin: auto;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 15px;
+    /* identical to box height */
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 
-.TarefasContainer{
-  display: flex;
-  flex-direction: column;
-  margin-top: 2em;
-  gap: 1em;
-}
+    color: #d1a28b;
 
-.Titulo{
-  width: 90%;
-  margin: auto;
-  margin-top: 1em;
+    /* Inside auto layout */
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+  }
+  .TarefasCompletasContainer{
+    opacity: 50%;
+  }
 }

@@ -1,34 +1,49 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Tarefas from "./Components/Tarefa/Tarefas";
+import Tarefas from "./Components/Tarefa";
 import CriarTarefa from "./Components/CriarTarefa";
 import TarefasCompletas from "./Components/TarefasCompletas";
-import { closestCorners, DndContext } from "@dnd-kit/core";
+
+// IMPORTANTE: Adicione o arrayMove aqui!
+import {
+  closestCorners,
+  DndContext,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  TouchSensor,
+} from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
+
 function App() {
   const [tarefas, setTarefas] = useState([
     {
       NomeTarefa: "Lavar a louça",
       StatusTarefa: false,
+      id: crypto.randomUUID(),
     },
     {
       NomeTarefa: "Ir as compras",
       StatusTarefa: true,
+      id: crypto.randomUUID(),
     },
     {
       NomeTarefa: "Dar banho no cachorro",
       StatusTarefa: false,
+      id: crypto.randomUUID(),
     },
   ]);
 
   const [encontrarTarefa, setEncontrarTarefa] = useState(
     tarefas.some((tarefa) => tarefa.StatusTarefa === true),
   );
-  const alternarStatus = (index) => {
+
+  // 1. CORREÇÃO DE LÓGICA: Agora recebe o ID em vez do INDEX
+  const alternarStatus = (id) => {
     setTarefas((tarefasAtuais) => {
-      // Cria uma nova referência do array
-      return tarefasAtuais.map((tarefa, i) => {
-        if (i === index) {
-          // Retorna um novo objeto com o valor invertido
+      return tarefasAtuais.map((tarefa) => {
+        if (tarefa.id === id) {
+          // Compara pelo ID
           return { ...tarefa, StatusTarefa: !tarefa.StatusTarefa };
         }
         return tarefa;
@@ -36,59 +51,89 @@ function App() {
     });
   };
 
+  const [textoEntrada, setTextoEntrada] = useState("");
+
   const criarTarefa = () => {
+    if (!textoEntrada) return;
+
     const novaTarefa = {
-      NomeTarefa: sessionStorage.getItem("valorTarefaEscrita"),
+      NomeTarefa: textoEntrada,
       StatusTarefa: false,
+      id: crypto.randomUUID(),
     };
+
     setTarefas([...tarefas, novaTarefa]);
+    setTextoEntrada("");
   };
 
   useEffect(() => {
     setEncontrarTarefa(tarefas.some((tarefa) => tarefa.StatusTarefa === true));
   }, [tarefas]);
+
+  // 2. ADIÇÃO DA FUNÇÃO DO DND-KIT: O que acontece ao soltar o item
+  const lidarComFimDoArrasto = (event) => {
+    const { active, over } = event;
+
+    // Se soltou fora da lista ou no mesmo lugar, ignora
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    setTarefas((tarefasAtuais) => {
+      // Procura as posições usando o ID
+      const posicaoAntiga = tarefasAtuais.findIndex((t) => t.id === active.id);
+      const posicaoNova = tarefasAtuais.findIndex((t) => t.id === over.id);
+
+      // Reordena o array e atualiza o estado
+      return arrayMove(tarefasAtuais, posicaoAntiga, posicaoNova);
+    });
+  };
+
+  // NOVA CONFIGURAÇÃO DE SENSORES
+  const sensores = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5, // No PC, exige que arraste 5px antes de ativar (evita arrastar sem querer num clique)
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250, // No celular, o usuário precisa segurar a tarefa por 250ms para começar a arrastar
+        tolerance: 5, // Permite que o dedo trema até 5px sem cancelar o arrasto
+      },
+    }),
+  );
+
   return (
     <>
       <div className="home">
         <h1 className="Titulo">Personal</h1>
-
         <div className="TarefasContainer">
-          {tarefas.map((tarefa, index) => {
-            if (tarefa.StatusTarefa === false) {
-              return (
-                <DndContext collisionDetection={closestCorners}>
-                  <Tarefas
-                    key={index}
-                    tarefaTexto={tarefa.NomeTarefa}
-                    tarefaStatus={tarefa.StatusTarefa}
-                    setTarefas={() => alternarStatus(index)}
-                  />
-                </DndContext>
-              );
-            }
-          })}
+          {/* O DndContext agora envolve a lista de pendentes e a de completas */}
+          <DndContext
+            sensors={sensores}
+            collisionDetection={closestCorners}
+            onDragEnd={lidarComFimDoArrasto}
+          >
+            <Tarefas tarefas={tarefas} alternarStatus={alternarStatus} />
+
+            {encontrarTarefa ? (
+              <TarefasCompletas
+                tarefas={tarefas}
+                alternarStatus={alternarStatus}
+              />
+            ) : (
+              ""
+            )}
+          </DndContext>
         </div>
-        {encontrarTarefa === true ? (
-          <div className="TarefasCompletasContainer">
-            <h2 className="TituloTarefasCompletas">COMPLETED</h2>
-            {tarefas.map((tarefa, index) => {
-              if (tarefa.StatusTarefa === true) {
-                return (
-                  <Tarefas
-                    key={index}
-                    tarefaTexto={tarefa.NomeTarefa}
-                    tarefaStatus={tarefa.StatusTarefa}
-                    setTarefas={() => alternarStatus(index)}
-                  />
-                );
-              }
-            })}
-          </div>
-        ) : (
-          ""
-        )}
       </div>
-      <CriarTarefa aoClicar={criarTarefa} />
+
+      <CriarTarefa
+        aoClicar={criarTarefa}
+        valor={textoEntrada}
+        setValor={setTextoEntrada}
+      />
     </>
   );
 }

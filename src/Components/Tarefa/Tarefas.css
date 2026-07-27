@@ -6,6 +6,8 @@
   margin-left: auto;
   width: 1em;
   height: 1em;
+  touch-action: none;
+  cursor: grab;
 }
 
 @media (min-width: 375px) {

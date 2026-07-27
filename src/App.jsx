@@ -10,7 +10,7 @@ import {
   DndContext,
   useSensor,
   useSensors,
-  PointerSensor,
+  MouseSensor,
   TouchSensor,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
@@ -91,14 +91,14 @@ function App() {
 
   // NOVA CONFIGURAÇÃO DE SENSORES
   const sensores = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 5, // No PC, exige que arraste 5px antes de ativar (evita arrastar sem querer num clique)
+        distance: 10, // No PC, exige que arraste 5px antes de ativar (evita arrastar sem querer num clique)
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 250, // No celular, o usuário precisa segurar a tarefa por 250ms para começar a arrastar
+        delay: 100, // No celular, o usuário precisa segurar a tarefa por 250ms para começar a arrastar
         tolerance: 5, // Permite que o dedo trema até 5px sem cancelar o arrasto
       },
     }),
